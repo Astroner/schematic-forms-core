@@ -1,0 +1,33 @@
+{
+  "name": "@schematic-forms/core",
+  "version": "0.6.5",
+  "description": "library for form processing",
+  "main": "lib/index.js",
+  "scripts": {
+    "start:dev": "nodemon src/runner.ts",
+    "build": "tsc"
+  },
+  "keywords": [
+    "forms",
+    "react-forms"
+  ],
+  "author": {
+    "name": "dogonis",
+    "email": "zhenyanikforov@gmail.com"
+  },
+  "license": "ISC",
+  "devDependencies": {
+    "nodemon": "^2.0.4",
+    "ts-node": "^9.0.0",
+    "typescript": "^4.0.2"
+  },
+  "nodemonConfig": {
+    "ignore": ["lib/*", "node_modules/*"],
+    "ext": "ts",
+    "delay": "3",
+    "watch": ["src/*"],
+    "execMap": {
+      "ts": "ts-node"
+    }
+  }
+}

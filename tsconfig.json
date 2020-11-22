@@ -1,0 +1,23 @@
+{
+    "compilerOptions": {
+        "module": "commonjs",
+        "declaration": true,
+        "removeComments": true,
+        "allowSyntheticDefaultImports": true,
+        "target": "es2017",
+        "sourceMap": true,
+        "outDir": "./lib",
+        "baseUrl": "./",
+        "strict": true,
+        "incremental": true,
+        "lib": [
+            "es2015",
+            "es2016",
+            "dom",
+            "es2018.promise"
+        ]
+    },
+    "include": [
+        "src"
+    ]
+}
