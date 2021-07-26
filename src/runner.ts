@@ -1,4 +1,10 @@
-import { FormController, Str, EmailValidator, EqualWith } from "./index";
+import { FormController, Str, EmailValidator, EqualWith, FormCreator } from "./index";
+
+const create = new FormCreator(() => ({
+    fields: {
+        aa: Str(true)
+    }
+}))
 
 const form = new FormController({
     fields: {

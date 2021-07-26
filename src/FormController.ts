@@ -20,6 +20,8 @@ export class FormController<FileldsTypes extends { [key: string]: All }, SubmitA
     private pending: boolean = false;
     private pendingObservable = new AdvancedObservable<{ pending: boolean }>()
 
+    private submitObservable = new AdvancedObservable<StoreType<FileldsTypes>>();
+
     public errors = new Errors<FileldsTypes>();
     
     constructor(
@@ -150,6 +152,7 @@ export class FormController<FileldsTypes extends { [key: string]: All }, SubmitA
             this.errors.setState(errors);
             return this.errors.getState();
         }
+        this.submitObservable.update(state as any);
         if(!this.config.submit) return;
         
         const sub = this.config.submit(state as any, ...arg);
@@ -180,21 +183,25 @@ export class FormController<FileldsTypes extends { [key: string]: All }, SubmitA
      * @param cb callback
      */
     subscribe(type: "errors", cb: Parameters<Errors<FileldsTypes>["subscribe"]>[0]): ReturnType<Errors<FileldsTypes>["subscribe"]>
+    subscribe(type: "submit", cb: Parameters<AdvancedObservable<StoreType<FileldsTypes>>['subscribe']>[0]): ReturnType<AdvancedObservable<StoreType<FileldsTypes>>['subscribe']>
     subscribe(type: "values", cb: Parameters<ValueStorage<FileldsTypes>["subscribe"]>[0]): ReturnType<ValueStorage<FileldsTypes>["subscribe"]>
     subscribe(type: "pending", cb: Parameters<AdvancedObservable<{ pending: boolean }>["subscribe"]>[0]): ReturnType<AdvancedObservable<{ pending: boolean }>["subscribe"]>
     subscribe(
-        type: "errors" | "values" | "pending",
+        type: "errors" | "values" | "pending" | "submit",
         cb: 
             | Parameters<Errors<FileldsTypes>["subscribe"]>[0] 
+            | Parameters<AdvancedObservable<StoreType<FileldsTypes>>['subscribe']>[0]
             | Parameters<ValueStorage<FileldsTypes>["subscribe"]>[0] 
             | Parameters<AdvancedObservable<{ pending: boolean }>["subscribe"]>[0]
     ): 
         | ReturnType<Errors<FileldsTypes>["subscribe"]> 
+        | ReturnType<AdvancedObservable<StoreType<FileldsTypes>>['subscribe']>
         | ReturnType<ValueStorage<FileldsTypes>["subscribe"]> 
         | ReturnType<AdvancedObservable<{ pending: boolean }>["subscribe"]> 
     {
         if (type === "errors") return this.errors.subscribe(cb as any)
         else if (type === "pending") return this.pendingObservable.subscribe(cb as any)
+        else if(type === "submit") return this.submitObservable.subscribe(cb as any)
         else return this.values.subscribe(cb as any)
     }
 }
