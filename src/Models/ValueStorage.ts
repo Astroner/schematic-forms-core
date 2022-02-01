@@ -16,7 +16,7 @@ export class ValueStorage<Fields extends { [key: string]: All}> {
             else if (fields[key].type === "number") this.value[key] = "" as any;
         }
 
-        this.initialValue = this.value;
+        this.initialValue = { ...this.value };
     }
 
     set<K extends keyof Fields>(name: K, value: FType2type<Fields[K]>) {
