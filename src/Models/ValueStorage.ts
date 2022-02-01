@@ -5,6 +5,7 @@ import { StoreType } from "../types";
 export class ValueStorage<Fields extends { [key: string]: All}> {
     private subs = new AdvancedObservable<Partial<StoreType<Fields>>>()
     private value: Partial<StoreType<Fields>> = {};
+    private initialValue: Partial<StoreType<Fields>> = {};
 
     constructor(
         fields: Fields
@@ -14,6 +15,8 @@ export class ValueStorage<Fields extends { [key: string]: All}> {
             else if (fields[key].type === "string") this.value[key] = "" as any;
             else if (fields[key].type === "number") this.value[key] = "" as any;
         }
+
+        this.initialValue = this.value;
     }
 
     set<K extends keyof Fields>(name: K, value: FType2type<Fields[K]>) {
@@ -30,7 +33,7 @@ export class ValueStorage<Fields extends { [key: string]: All}> {
     }
 
     clear(){
-        this.value = {};
+        this.value = this.initialValue;
         this.subs.update(this.value)
     }
     
