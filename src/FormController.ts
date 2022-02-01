@@ -6,26 +6,26 @@ import { ValueStorage } from "./Models/ValueStorage";
 import { Errors } from "./Models/Errors";
 import { AdvancedObservable } from "./Models/AdvancedObservable";
 
-export class FormController<FileldsTypes extends { [key: string]: All }, SubmitArgs extends any[]>{
+export class FormController<FieldsTypes extends { [key: string]: All }, SubmitArgs extends any[]>{
 
     /**@description form values */
-    private values: ValueStorage<FileldsTypes>
+    private values: ValueStorage<FieldsTypes>
 
     /** @description type guards (Guards returns Error instance or passing value) */
     private guards: Map<string, GuardFunction<any>> = new Map();
 
     /** @description fields validators(Validators return Error instance or nothing) */
-    private validators: Map<string, ValidatorFunction<any, Partial<StoreType<FileldsTypes>>>> = new Map();
+    private validators: Map<string, ValidatorFunction<any, Partial<StoreType<FieldsTypes>>>> = new Map();
 
     private pending: boolean = false;
     private pendingObservable = new AdvancedObservable<{ pending: boolean }>()
 
-    private submitObservable = new AdvancedObservable<StoreType<FileldsTypes>>();
+    private submitObservable = new AdvancedObservable<StoreType<FieldsTypes>>();
 
-    public errors = new Errors<FileldsTypes>();
+    public errors = new Errors<FieldsTypes>();
     
     constructor(
-        private config: ControllerConfig<FileldsTypes, SubmitArgs>
+        private config: ControllerConfig<FieldsTypes, SubmitArgs>
     ) {
         /*creating storage */
         this.values = new ValueStorage(config.fields);
@@ -71,7 +71,7 @@ export class FormController<FileldsTypes extends { [key: string]: All }, SubmitA
      * 
      * @description sets single value
      */
-    set<K extends keyof FileldsTypes>(name: K, value: FType2type<FileldsTypes[K]>) {
+    set<K extends keyof FieldsTypes>(name: K, value: FType2type<FieldsTypes[K]>) {
         this.change(name as string, value);
     }
 
@@ -81,12 +81,20 @@ export class FormController<FileldsTypes extends { [key: string]: All }, SubmitA
      * 
      * @returns field value
      */
-    get<K extends keyof FileldsTypes>(name: K): FType2type<FileldsTypes[K]> | undefined {
+    get<K extends keyof FieldsTypes>(name: K): FType2type<FieldsTypes[K]> | undefined {
         return this.values.get(name)
     }
 
     isPending(){
         return this.pending
+    }
+
+    /**
+     * @description clears the form
+     */
+    clear(){
+        this.values.clear();
+        this.errors.clear();
     }
 
     /**
@@ -133,12 +141,12 @@ export class FormController<FileldsTypes extends { [key: string]: All }, SubmitA
      * 
      * @returns void if successed and errors map if failed 
      */
-    submit(...arg: SubmitArgs): void | Errs<FileldsTypes> {
+    submit(...arg: SubmitArgs): void | Errs<FieldsTypes> {
         if (this.errors.size() > 0)
             return this.errors.getState();
 
         const state = this.values.getState();
-        const errors: Errs<FileldsTypes> = {};
+        const errors: Errs<FieldsTypes> = {};
 
         for (let key in this.config.fields) {
             const validator = this.validators.get(key);
@@ -182,21 +190,21 @@ export class FormController<FileldsTypes extends { [key: string]: All }, SubmitA
      * @param type what changes do u want to subscribe
      * @param cb callback
      */
-    subscribe(type: "errors", cb: Parameters<Errors<FileldsTypes>["subscribe"]>[0]): ReturnType<Errors<FileldsTypes>["subscribe"]>
-    subscribe(type: "submit", cb: Parameters<AdvancedObservable<StoreType<FileldsTypes>>['subscribe']>[0]): ReturnType<AdvancedObservable<StoreType<FileldsTypes>>['subscribe']>
-    subscribe(type: "values", cb: Parameters<ValueStorage<FileldsTypes>["subscribe"]>[0]): ReturnType<ValueStorage<FileldsTypes>["subscribe"]>
+    subscribe(type: "errors", cb: Parameters<Errors<FieldsTypes>["subscribe"]>[0]): ReturnType<Errors<FieldsTypes>["subscribe"]>
+    subscribe(type: "submit", cb: Parameters<AdvancedObservable<StoreType<FieldsTypes>>['subscribe']>[0]): ReturnType<AdvancedObservable<StoreType<FieldsTypes>>['subscribe']>
+    subscribe(type: "values", cb: Parameters<ValueStorage<FieldsTypes>["subscribe"]>[0]): ReturnType<ValueStorage<FieldsTypes>["subscribe"]>
     subscribe(type: "pending", cb: Parameters<AdvancedObservable<{ pending: boolean }>["subscribe"]>[0]): ReturnType<AdvancedObservable<{ pending: boolean }>["subscribe"]>
     subscribe(
         type: "errors" | "values" | "pending" | "submit",
         cb: 
-            | Parameters<Errors<FileldsTypes>["subscribe"]>[0] 
-            | Parameters<AdvancedObservable<StoreType<FileldsTypes>>['subscribe']>[0]
-            | Parameters<ValueStorage<FileldsTypes>["subscribe"]>[0] 
+            | Parameters<Errors<FieldsTypes>["subscribe"]>[0] 
+            | Parameters<AdvancedObservable<StoreType<FieldsTypes>>['subscribe']>[0]
+            | Parameters<ValueStorage<FieldsTypes>["subscribe"]>[0] 
             | Parameters<AdvancedObservable<{ pending: boolean }>["subscribe"]>[0]
     ): 
-        | ReturnType<Errors<FileldsTypes>["subscribe"]> 
-        | ReturnType<AdvancedObservable<StoreType<FileldsTypes>>['subscribe']>
-        | ReturnType<ValueStorage<FileldsTypes>["subscribe"]> 
+        | ReturnType<Errors<FieldsTypes>["subscribe"]> 
+        | ReturnType<AdvancedObservable<StoreType<FieldsTypes>>['subscribe']>
+        | ReturnType<ValueStorage<FieldsTypes>["subscribe"]> 
         | ReturnType<AdvancedObservable<{ pending: boolean }>["subscribe"]> 
     {
         if (type === "errors") return this.errors.subscribe(cb as any)

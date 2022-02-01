@@ -37,5 +37,10 @@ export class Errors<Fields extends { [key: string]: All }> {
         return this.value
     }
 
+    clear(){
+        this.value = {};
+        this.subs.update(this.value)
+    }
+
     subscribe: AdvancedObservable<Errs<Fields>>["subscribe"] = this.subs.subscribe.bind(this.subs)
 }

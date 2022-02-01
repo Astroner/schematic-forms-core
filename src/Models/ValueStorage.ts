@@ -28,6 +28,11 @@ export class ValueStorage<Fields extends { [key: string]: All}> {
     getState(): Partial<StoreType<Fields>> {
         return this.value;
     }
+
+    clear(){
+        this.value = {};
+        this.subs.update(this.value)
+    }
     
     subscribe: AdvancedObservable<Partial<StoreType<Fields>>>["subscribe"] = this.subs.subscribe.bind(this.subs)
 }

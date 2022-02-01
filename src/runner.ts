@@ -25,12 +25,11 @@ const form = new FormController({
     })
 })
 
-form.subscribe("pending", ({ pending }) => console.log(`Pending: ${pending}`))
-form.subscribe("errors", console.log)
-
 form.change("email", "aa@aa.aa")
 form.change("password", "aa@aa.aa")
 form.set("confirm", "2")
 form.set("confirm", "aa@aa.aa")
 
-form.submit()
+console.log(form.getValues())
+form.clear()
+console.log(form.getValues())
